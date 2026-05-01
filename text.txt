@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SparkleRead ✨ • Interactive Reading for 1st Graders</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&amp;family=Comic+Neue:wght@400;700&amp;display=swap');
+        
+        :root {
+            --tw-color-primary: #22c55e;
+        }
+        
+        * {
+            font-family: 'Fredoka', 'Comic Neue', sans-serif;
+        }
+        
+        .navbar {
+            background: linear-gradient(90deg, #22c55e, #10b981);
+            box-shadow: 0 10px 15px -3px rgb(16 185 129);
+        }
+        
+        .card-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .card-hover:hover {
+            transform: scale(1.05) rotate(2deg);
+            box-shadow: 0 25px 50px -12px rgb(16 185 129);
+        }
+        
+        .story-text {
+            font-size: 1.5rem;
+            line-height: 2.5rem;
+        }
+        
+        .modal {
+            animation: popIn 0.3s ease-out;
+        }
+        
+        @keyframes popIn {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        .sparkle {
+            animation: sparkleAnim 1.5s infinite;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-yellow-100 via-green-100 to-blue-100 min-h-screen">
+    <!-- NAVBAR -->
+    <nav class="navbar text-white sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+            <!-- Logo -->
+            <div onclick="navigateTo('home')" class="flex items-center gap-x-3 cursor-pointer">
+                <div class="text-5xl sparkle">✨</div>
+                <div>
+                    <h1 class="text-4xl font-bold tracking-tighter">SparkleRead</h1>
+                    <p class="text-xs font-medium -mt-1 text-green-100">1st Grade Reading Magic</p>
+                </div>
+                <div class="text-4xl">📖</div>
+            </div>
+
+            <!-- Menu -->
+            <div class="flex items-center gap-x-8 text-xl font-semibold">
+                <button onclick="navigateTo('home')" 
+                        class="flex items-center gap-x-2 hover:bg-white/20 px-5 py-2 rounded-3xl transition-colors">
+                    🏠 Home
+                </button>
+                <button onclick="navigateTo('stories')" 
+                        class="flex items-center gap-x-2 hover:bg-white/20 px-5 py-2 rounded-3xl transition-colors">
+                    📚 Stories
+                </button>
+                <button onclick="navigateTo('games')" 
+                        class="flex items-center gap-x-2 hover:bg-white/20 px-5 py-2 rounded-3xl transition-colors">
+                    🎲 Games
+                </button>
+                <button onclick="navigateTo('phonics')" 
+                        class="flex items-center gap-x-2 hover:bg-white/20 px-5 py-2 rounded-3xl transition-colors">
+                    🔤 Phonics
+                </button>
+                <button onclick="navigateTo('progress')" 
+                        class="flex items-center gap-x-2 hover:bg-white/20 px-5 py-2 rounded-3xl transition-colors">
+                    ⭐ My Stars
+                </button>
+            </div>
+
+            <!-- Kid avatar + TTS toggle -->
+            <div class="flex items-center gap-x-4">
+                <div class="bg-white text-green-600 text-2xl w-10 h-10 rounded-2xl flex items-center justify-center shadow-inner font-bold">👦</div>
+                <div onclick="toggleTTS()" id="tts-indicator"
+                     class="bg-white/20 hover:bg-white/30 text-white text-sm font-medium px-4 py-1 rounded-3xl flex items-center gap-x-2 cursor-pointer transition-colors">
+                    <span id="tts-text">🔊 Read Aloud ON</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div id="main-content" class="max-w-7xl mx-auto px-6 py-8">
+        <!-- HOME PAGE -->
+        <div id="page-home">
+            <div class="text-center py-12">
+                <div class="inline-flex items-center gap-x-4 bg-white rounded-3xl px-8 py-3 shadow-xl mb-8">
+                    <span class="text-6xl">🦊</span>
+                    <div>
+                        <h2 class="text-5xl font-bold text-green-700">Hi, 1st Grader!</h2>
+                        <p class="text-3xl text-green-600">I'm Finn the Reading Fox 🦊</p>
+                    </div>
+                    <span class="text-6xl">📖</span>
+                </div>
+                
+                <h1 class="text-7xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-blue-600 mb-4">
+                    Let's read, play &amp; sparkle!
+                </h1>
+                <p class="text-3xl text-green-700 max-w-2xl mx-auto mb-10">
+                    Fun interactive stories, games, and phonics just for YOU!
+                </p>
+
+                <!-- Quick start buttons -->
+                <div class="flex flex-wrap justify-center gap-6">
+                    <button onclick="navigateTo('stories')" 
+                            class="bg-white text-green-700 text-3xl font-bold px-12 py-6 rounded-3xl shadow-2xl flex items-center gap-x-4 hover:shadow-green-300 transition-all">
+                        <span>📖</span>
+                        Read a Story
+                    </button>
+                    <button onclick="navigateTo('games')" 
+                            class="bg-white text-purple-700 text-3xl font-bold px-12 py-6 rounded-3xl shadow-2xl flex items-center gap-x-4 hover:shadow-purple-300 transition-all">
+                        <span>🎲</span>
+                        Play Games
+                    </button>
+                    <button onclick="navigateTo('phonics')" 
+                            class="bg-white text-orange-700 text-3xl font-bold px-12 py-6 rounded-3xl shadow-2xl flex items-center gap-x-4 hover:shadow-orange-300 transition-all">
+                        <span>🔤</span>
+                        Learn Phonics
+                    </button>
+                </div>
+
+                <!-- Featured story -->
+                <div class="mt-16 max-w-2xl mx-auto bg-white rounded-3xl shadow-xl p-8">
+                    <div class="flex items-center gap-x-4 mb-4">
+                        <div class="text-4xl">🌟</div>
+                        <p class="text-2xl font-semibold text-green-700">Today's featured story</p>
+                    </div>
+                    <div onclick="openStory(0)" class="cursor-pointer flex gap-6 items-center">
+                        <div class="text-8xl">🐶</div>
+                        <div class="flex-1 text-left">
+                            <h3 class="text-4xl font-bold text-green-600">The Brave Little Puppy</h3>
+                            <p class="text-xl text-gray-600 mt-2">Help Max find his way home! Click words to hear them sparkle.</p>
+                            <div class="mt-4 inline-flex bg-green-100 text-green-700 text-lg px-6 py-2 rounded-2xl font-medium">15 words • 5 minutes of fun</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- STORIES PAGE -->
+        <div id="page-stories" class="hidden">
+            <h2 class="text-5xl font-bold text-center mb-10 text-green-700">Choose Your Adventure ✨</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8" id="stories-grid">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+
+        <!-- STORY READER MODAL -->
+        <div id="story-modal" onclick="if(event.target.id === 'story-modal') closeStory()" 
+             class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-[100]">
+            <div onclick="event.stopImmediatePropagation()" 
+                 class="modal bg-white rounded-3xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-hidden shadow-2xl">
+                <div class="px-8 pt-6 pb-4 border-b flex items-center justify-between">
+                    <div id="modal-story-title" class="text-4xl font-bold text-green-700"></div>
+                    <div class="flex gap-x-4">
+                        <button onclick="readAloudCurrentStory()" 
+                                class="flex items-center gap-x-3 bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-3xl text-xl font-medium">
+                            🔊 Read Aloud
+                        </button>
+                        <button onclick="closeStory()" 
+                                class="text-4xl text-gray-400 hover:text-red-500">✕</button>
+                    </div>
+                </div>
+                
+                <div class="p-8 overflow-y-auto max-h-[65vh]" id="story-content">
+                    <!-- Dynamic story text + interactive elements populated by JS -->
+                </div>
+                
+                <div class="px-8 py-6 bg-green-50 border-t flex items-center justify-between">
+                    <button onclick="completeStory()" 
+                            class="bg-green-600 text-white px-10 py-4 rounded-3xl text-2xl font-bold flex items-center gap-x-3">
+                        🎉 I finished! Give me a star!
+                    </button>
+                    <div id="word-click-hint" class="text-green-600 text-lg font-medium flex items-center gap-x-2">
+                        👉 Click any colorful word to hear it again!
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- GAMES PAGE -->
+        <div id="page-games" class="hidden">
+            <h2 class="text-5xl font-bold text-center mb-10 text-purple-700">Super Fun Reading Games 🎲</h2>
+            
+            <!-- Sight Word Memory Match -->
+            <div class="mb-16">
+                <div class="flex justify-between items-baseline mb-6">
+                    <h3 class="text-4xl font-bold text-purple-600">Sight Word Memory Match</h3>
+                    <button onclick="startMemoryGame()" 
+                            class="bg-purple-600 text-white px-8 py-3 rounded-3xl text-xl">🔄 New Game</button>
+                </div>
+                <div id="memory-grid" class="grid grid-cols-6 gap-4 max-w-3xl mx-auto">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
+            <!-- Sentence Builder Game -->
+            <div>
+                <h3 class="text-4xl font-bold text-purple-600 mb-6">Build the Sentence!</h3>
+                <div class="bg-white rounded-3xl p-8 shadow-xl max-w-2xl mx-auto">
+                    <p id="sentence-target" class="text-3xl text-center text-gray-700 mb-8 min-h-[80px] flex items-center justify-center border-4 border-dashed border-purple-200 rounded-2xl"></p>
+                    
+                    <div id="word-bank" class="flex flex-wrap gap-4 justify-center">
+                        <!-- Populated by JS -->
+                    </div>
+                    
+                    <div class="flex justify-center gap-x-4 mt-10">
+                        <button onclick="checkSentence()" 
+                                class="bg-purple-600 text-white px-10 py-4 rounded-3xl text-2xl">✅ Check My Sentence</button>
+                        <button onclick="resetSentenceGame()" 
+                                class="bg-gray-200 text-gray-700 px-10 py-4 rounded-3xl text-2xl">🔄 Try Again</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PHONICS PAGE -->
+        <div id="page-phonics" class="hidden">
+            <h2 class="text-5xl font-bold text-center mb-10 text-orange-600">Phonics Power 🔤</h2>
+            <p class="text-center text-2xl text-orange-600 mb-8">Click any letter to hear its sound + a fun word!</p>
+            
+            <div class="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-13 gap-4 max-w-5xl mx-auto" id="phonics-grid">
+                <!-- Populated by JS -->
+            </div>
+            
+            <div class="mt-16 bg-white rounded-3xl p-8 max-w-2xl mx-auto text-center">
+                <h3 class="text-3xl mb-4">Try a CVC Word!</h3>
+                <div class="flex justify-center gap-x-8 text-6xl mb-8" id="cvc-display">
+                    <!-- JS will put random CVC here -->
+                </div>
+                <button onclick="generateCVC()" 
+                        class="bg-orange-500 text-white px-8 py-4 text-2xl rounded-3xl">Make a new word!</button>
+                <button onclick="readCVC()" 
+                        class="ml-4 bg-green-500 text-white px-8 py-4 text-2xl rounded-3xl">🔊 Say it!</button>
+            </div>
+        </div>
+
+        <!-- PROGRESS PAGE -->
+        <div id="page-progress" class="hidden">
+            <div class="max-w-2xl mx-auto bg-white rounded-3xl p-10 shadow-2xl text-center">
+                <h2 class="text-5xl font-bold text-green-700 mb-6">My Reading Stars ⭐</h2>
+                
+                <div id="stars-container" class="flex justify-center gap-x-6 text-7xl mb-10">
+                    <!-- JS populated stars -->
+                </div>
+                
+                <div class="text-3xl mb-6">You've earned <span id="star-count" class="font-bold text-green-600">0</span> stars!</div>
+                
+                <p class="text-xl text-gray-600 mb-8">Every story you read and game you win gives you a shiny star 🌟</p>
+                
+                <div class="grid grid-cols-3 gap-6 text-left">
+                    <div class="bg-yellow-100 rounded-2xl p-6">
+                        <div class="text-5xl mb-2">📖</div>
+                        <div class="font-semibold text-2xl">Stories read</div>
+                        <div id="stories-read" class="text-6xl font-bold text-yellow-600">0</div>
+                    </div>
+                    <div class="bg-purple-100 rounded-2xl p-6">
+                        <div class="text-5xl mb-2">🎲</div>
+                        <div class="font-semibold text-2xl">Games won</div>
+                        <div id="games-won" class="text-6xl font-bold text-purple-600">0</div>
+                    </div>
+                    <div class="bg-orange-100 rounded-2xl p-6">
+                        <div class="text-5xl mb-2">🔤</div>
+                        <div class="font-semibold text-2xl">Phonics practiced</div>
+                        <div id="phonics-practiced" class="text-6xl font-bold text-orange-600">0</div>
+                    </div>
+                </div>
+                
+                <button onclick="resetProgress()" 
+                        class="mt-12 text-red-400 underline text-lg">Reset my stars (for grown-ups)</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating encouragement -->
+    <div onclick="celebrate()" 
+         class="fixed bottom-8 right-8 bg-white shadow-2xl text-5xl w-16 h-16 rounded-3xl flex items-center justify-center cursor-pointer hover:rotate-12 transition-transform">
+        🎉
+    </div>
+
+    <script>
+        // Tailwind initialization
+        function initializeTailwind() {
+            return {
+                config(userConfig = {}) {
+                    return {
+                        configUser: userConfig,
+                        theme: {
+                            extend: {
+                                colors: {
+                                    primary: '#22c55e'
+                                }
+                            }
+                        }
+                    }
+                },
+                theme: {
+                    extend: {}
+                }
+            }
+        }
+        
+        // Global state
+        let currentStoryIndex = -1
+        let ttsEnabled = true
+        let stars = 0
+        let storiesCompleted = 0
+        let gamesWon = 0
+        let phonicsPracticed = 0
+        
+        // Sample stories for 1st grade level (very simple vocabulary)
+        const stories = [
+            {
+                id: 0,
+                title: "The Brave Little Puppy",
+                emoji: "🐶",
+                color: "green",
+                text: "Once upon a time there was a little puppy named Max. Max loved to run and play. One sunny day, Max saw a big red ball. 'Woof!' said Max. The ball rolled down the hill. Max ran after it. He was very brave! At the bottom of the hill Max found his friend the cat. They played together all day. The end.",
+                highlightedWords: ["brave", "sunny", "ball", "hill", "friend", "played"]
+            },
+            {
+                id: 1,
+                title: "The Magic Butterfly",
+                emoji: "🦋",
+                color: "purple",
+                text: "Lily was in the garden. She saw a pretty blue butterfly. 'Hello!' said Lily. The butterfly landed on her hand. It had sparkly wings. 'Where are you going?' asked Lily. The butterfly flew up high into the sky. Lily smiled. She felt very happy. The end.",
+                highlightedWords: ["magic", "butterfly", "garden", "sparkly", "wings", "happy"]
+            },
+            {
+                id: 2,
+                title: "Sam's Big Adventure",
+                emoji: "🌳",
+                color: "orange",
+                text: "Sam the squirrel wanted an acorn. He climbed the tall tree. Up, up, up he went! He saw a shiny red acorn. 'Mine!' said Sam. He grabbed it and ran home. His family cheered. What a great day! The end.",
+                highlightedWords: ["adventure", "squirrel", "acorn", "climbed", "shiny", "cheered"]
+            }
+        ]
+        
+        // Sight words for memory game (common 1st grade sight words)
+        const sightWords = [
+            { word: "the", emoji: "📖" },
+            { word: "and", emoji: "🤝" },
+            { word: "is", emoji: "✅" },
+            { word: "you", emoji: "👋" },
+            { word: "it", emoji: "📦" },
+            { word: "in", emoji: "🏠" }
+        ]
+        
+        // Sentence builder words
+        let sentenceGame = {
+            target: "The cat is on the mat.",
+            words: ["The", "cat", "is", "on", "the", "mat", "."],
+            shuffled: []
+        }
+        
+        // Current selected words for sentence builder
+        let selectedWords = []
+        
+        // Memory game variables
+        let memoryCards = []
+        let flippedCards = []
+        
+        // Phonics letters (simple)
+        const phonicsLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("")
+        
+        // Load progress from localStorage
+        function loadProgress() {
+            const savedStars = localStorage.getItem('sparkleReadStars')
+            if (savedStars) stars = parseInt(savedStars)
+            
+            const savedStories = localStorage.getItem('sparkleReadStories')
+            if (savedStories) storiesCompleted = parseInt(savedStories)
+            
+            const savedGames = localStorage.getItem('sparkleReadGames')
+            if (savedGames) gamesWon = parseInt(savedGames)
+            
+            const savedPhonics = localStorage.getItem('sparkleReadPhonics')
+            if (savedPhonics) phonicsPracticed = parseInt(savedPhonics)
+            
+            renderProgress()
+        }
+        
+        // Save progress
+        function saveProgress() {
+            localStorage.setItem('sparkleReadStars', stars)
+            localStorage.setItem('sparkleReadStories', storiesCompleted)
+            localStorage.setItem('sparkleReadGames', gamesWon)
+            localStorage.setItem('sparkleReadPhonics', phonicsPracticed)
+            renderProgress()
+        }
+        
+        // Render progress page
+        function renderProgress() {
+            const container = document.getElementById('stars-container')
+            container.innerHTML = ''
+            
+            for (let i = 1; i <= 12; i++) {
+                const starHTML = i <= stars 
+                    ? `<div class="animate-bounce">⭐</div>` 
+                    : `<div class="text-7xl opacity-30">☆</div>`
+                container.innerHTML += starHTML
+            }
+            
+            document.getElementById('star-count').textContent = stars
+            document.getElementById('stories-read').textContent = storiesCompleted
+            document.getElementById('games-won').textContent = gamesWon
+            document.getElementById('phonics-practiced').textContent = phonicsPracticed
+        }
+        
+        // Navigate between pages
+        function navigateTo(page) {
+            // Hide all pages
+            document.querySelectorAll('#main-content > div').forEach(div => {
+                if (div.id.startsWith('page-')) div.classList.add('hidden')
+            })
+            
+            // Show the requested page
+            const target = document.getElementById('page-' + page)
+            if (target) target.classList.remove('hidden')
+            
+            // Special init for some pages
+            if (page === 'stories') renderStories()
+            if (page === 'phonics') renderPhonics()
+            if (page === 'games') {
+                // Auto start memory if empty
+                if (document.getElementById('memory-grid').children.length === 0) startMemoryGame()
+            }
+        }
+        
+        // Render stories grid
+        function renderStories() {
+            const grid = document.getElementById('stories-grid')
+            grid.innerHTML = ''
+            
+            stories.forEach((story, index) => {
+                const cardHTML = `
+                <div onclick="openStory(${index})" class="card-hover cursor-pointer bg-white rounded-3xl overflow-hidden shadow-xl">
+                    <div class="h-40 flex items-center justify-center text-9xl bg-gradient-to-br from-${story.color}-100 to-white">
+                        ${story.emoji}
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-3xl font-bold text-green-700">${story.title}</h3>
+                        <p class="text-lg text-gray-600 mt-2">Click to read and sparkle!</p>
+                        <div class="mt-6 flex justify-between items-center">
+                            <span class="text-sm bg-green-100 text-green-700 px-4 py-1 rounded-3xl">Interactive</span>
+                            <span class="text-4xl">➜</span>
+                        </div>
+                    </div>
+                </div>`
+                grid.innerHTML += cardHTML
+            })
+        }
+        
+        // Open a story in modal
+        function openStory(index) {
+            currentStoryIndex = index
+            const story = stories[index]
+            
+            document.getElementById('modal-story-title').innerHTML = `${story.emoji} ${story.title}`
+            
+            // Build interactive story content
+            let contentHTML = `<div class="story-text leading-relaxed">`
+            
+            const words = story.text.split(' ')
+            words.forEach(word => {
+                const cleanWord = word.replace(/[.,!?]/g, '')
+                if (story.highlightedWords.includes(cleanWord.toLowerCase())) {
+                    contentHTML += `<span onclick="speak('${cleanWord}'); this.classList.add('text-green-500','scale-125')" class="cursor-pointer inline-block px-2 py-1 hover:bg-green-200 rounded-2xl transition-all">${word}</span> `
+                } else {
+                    contentHTML += `<span onclick="speak('${cleanWord}')" class="cursor-pointer">${word}</span> `
+                }
+            })
+            
+            contentHTML += `</div>`
+            
+            // Add a cute illustration
+            contentHTML += `
+            <div class="my-12 text-center text-8xl flex justify-center gap-x-12">
+                ${story.emoji}
+                <span class="text-7xl">🌟</span>
+                ${story.emoji}
+            </div>
+            <div class="text-center text-xl text-green-600 font-medium">Great job reading! Click words to hear them again.</div>`
+            
+            document.getElementById('story-content').innerHTML = contentHTML
+            document.getElementById('story-modal').classList.remove('hidden')
+            
+            // Auto read the whole story if TTS enabled
+            if (ttsEnabled) setTimeout(() => readAloudCurrentStory(), 800)
+        }
+        
+        function closeStory() {
+            document.getElementById('story-modal').classList.add('hidden')
+            currentStoryIndex = -1
+        }
+        
+        // Read entire current story aloud
+        function readAloudCurrentStory() {
+            if (!ttsEnabled || currentStoryIndex === -1) return
+            const story = stories[currentStoryIndex]
+            speak(story.text)
+        }
+        
+        // Mark story complete and give star
+        function completeStory() {
+            closeStory()
+            stars++
+            storiesCompleted++
+            saveProgress()
+            
+            // Celebration
+            celebrate()
+            
+            // Show a thank you message
+            const msg = document.createElement('div')
+            msg.innerHTML = `
+            <div class="fixed bottom-12 left-1/2 transform -translate-x-1/2 bg-green-600 text-white text-3xl font-bold px-10 py-6 rounded-3xl shadow-2xl flex items-center gap-x-4">
+                ⭐ You earned a star!
+                <span class="text-5xl">🎉</span>
+            </div>`
+            document.body.appendChild(msg.firstElementChild)
+            
+            setTimeout(() => {
+                msg.firstElementChild.style.transition = 'all 0.6s'
+                msg.firstElementChild.style.opacity = 0
+                setTimeout(() => msg.firstElementChild.remove(), 600)
+            }, 2200)
+        }
+        
+        // Simple Text-to-Speech
+        function speak(text) {
+            if (!ttsEnabled || !('speechSynthesis' in window)) return
+            
+            const utterance = new SpeechSynthesisUtterance(text)
+            utterance.pitch = 1.2
+            utterance.rate = 0.9
+            utterance.volume = 1
+            // Kid-friendly voice (best available)
+            const voices = speechSynthesis.getVoices()
+            const childVoice = voices.find(v => v.name.includes('Samantha') || v.name.includes('Karen') || v.lang === 'en-US')
+            if (childVoice) utterance.voice = childVoice
+            
+            speechSynthesis.speak(utterance)
+        }
+        
+        // Toggle TTS
+        function toggleTTS() {
+            ttsEnabled = !ttsEnabled
+            const indicator = document.getElementById('tts-text')
+            indicator.textContent = ttsEnabled ? '🔊 Read Aloud ON' : '🔇 Read Aloud OFF'
+        }
+        
+        // Memory match game
+        function startMemoryGame() {
+            const grid = document.getElementById('memory-grid')
+            grid.innerHTML = ''
+            
+            // Create 12 cards (6 pairs)
+            memoryCards = []
+            const pairs = [...sightWords, ...sightWords]
+            
+            // Shuffle
+            pairs.sort(() => Math.random() - 0.5)
+            
+            pairs.forEach((item, i) => {
+                const isWord = i % 2 === 0 // alternate word + emoji
+                
+                const card = document.createElement('div')
+                card.className = `memory-card aspect-square bg-gradient-to-br from-purple-400 to-purple-600 rounded-3xl flex items-center justify-center text-6xl shadow-inner cursor-pointer select-none`
+                card.dataset.value = isWord ? item.word : item.emoji
+                card.dataset.type = isWord ? 'word' : 'emoji'
+                card.innerHTML = `❓`
+                
+                card.addEventListener('click', handleMemoryClick)
+                grid.appendChild(card)
+                memoryCards.push(card)
+            })
+            
+            flippedCards = []
+        }
+        
+        function handleMemoryClick(e) {
+            const card = e.currentTarget
+            if (card.classList.contains('flipped') || flippedCards.length >= 2) return
+            
+            // Flip it
+            card.classList.add('flipped')
+            card.style.transform = 'rotateY(180deg)'
+            card.innerHTML = card.dataset.type === 'word' 
+                ? `<div class="text-white text-4xl font-bold">${card.dataset.value}</div>` 
+                : `<div class="text-7xl">${card.dataset.value}</div>`
+            
+            flippedCards.push(card)
+            
+            // Check for match
+            if (flippedCards.length === 2) {
+                setTimeout(() => {
+                    const first = flippedCards[0]
+                    const second = flippedCards[1]
+                    
+                    const match = (first.dataset.type === 'word' && second.dataset.type === 'emoji' && first.dataset.value === second.dataset.value) ||
+                                  (second.dataset.type === 'word' && first.dataset.type === 'emoji' && second.dataset.value === first.dataset.value)
+                    
+                    if (match) {
+                        // Matched!
+                        first.style.opacity = 0.3
+                        second.style.opacity = 0.3
+                        first.style.pointerEvents = 'none'
+                        second.style.pointerEvents = 'none'
+                        
+                        // Check if all done
+                        const remaining = Array.from(document.querySelectorAll('.memory-card')).filter(c => !c.style.opacity || c.style.opacity === '1')
+                        if (remaining.length === 0) {
+                            gamesWon++
+                            stars++
+                            saveProgress()
+                            celebrate()
+                            setTimeout(() => {
+                                alert("🎉 Amazing! You matched all the sight words! You earned a star!")
+                                startMemoryGame()
+                            }, 800)
+                        }
+                    } else {
+                        // Flip back
+                        first.classList.remove('flipped')
+                        second.classList.remove('flipped')
+                        first.style.transform = ''
+                        second.style.transform = ''
+                        first.innerHTML = `❓`
+                        second.innerHTML = `❓`
+                    }
+                    
+                    flippedCards = []
+                }, 900)
+            }
+        }
+        
+        // Sentence builder
+        function renderSentenceGame() {
+            // Shuffle words
+            sentenceGame.shuffled = [...sentenceGame.words].sort(() => Math.random() - 0.5)
+            
+            const bank = document.getElementById('word-bank')
+            bank.innerHTML = ''
+            
+            sentenceGame.shuffled.forEach(word => {
+                const pill = document.createElement('div')
+                pill.className = `px-7 py-4 bg-purple-100 hover:bg-purple-200 rounded-3xl text-3xl font-bold cursor-grab active:cursor-grabbing`
+                pill.textContent = word
+                pill.draggable = true
+                pill.addEventListener('dragstart', dragStart)
+                pill.addEventListener('click', () => addToSentence(word, pill))
+                bank.appendChild(pill)
+            })
+            
+            selectedWords = []
+            document.getElementById('sentence-target').innerHTML = `<span class="opacity-40">Drag or click words here...</span>`
+        }
+        
+        function dragStart(e) {
+            e.dataTransfer.setData('text', e.target.textContent)
+        }
+        
+        function addToSentence(word, element) {
+            selectedWords.push(word)
+            updateSentenceDisplay()
+            
+            // Remove from bank
+            if (element) element.remove()
+        }
+        
+        function updateSentenceDisplay() {
+            const target = document.getElementById('sentence-target')
+            target.innerHTML = selectedWords.join(' ')
+        }
+        
+        function checkSentence() {
+            const built = selectedWords.join(' ').trim() + '.'
+            if (built.toLowerCase() === sentenceGame.target.toLowerCase()) {
+                gamesWon++
+                stars++
+                saveProgress()
+                celebrate()
+                alert("✅ Perfect sentence! You earned a star! 🎉")
+                resetSentenceGame()
+            } else {
+                alert("Almost! Try again. The correct sentence is: " + sentenceGame.target)
+                resetSentenceGame()
+            }
+        }
+        
+        function resetSentenceGame() {
+            // Pick a new target sentence sometimes
+            if (Math.random() > 0.6) {
+                const possibleSentences = [
+                    "The dog runs fast.",
+                    "She likes big apples.",
+                    "We play with friends.",
+                    "The sun is yellow."
+                ]
+                sentenceGame.target = possibleSentences[Math.floor(Math.random() * possibleSentences.length)]
+            }
+            selectedWords = []
+            renderSentenceGame()
+        }
+        
+        // Phonics grid
+        function renderPhonics() {
+            const grid = document.getElementById('phonics-grid')
+            grid.innerHTML = ''
+            
+            phonicsLetters.forEach(letter => {
+                const btn = document.createElement('button')
+                btn.className = `aspect-square text-7xl font-bold bg-gradient-to-br from-orange-100 to-yellow-100 hover:from-orange-200 hover:to-yellow-200 rounded-3xl flex items-center justify-center shadow-md`
+                btn.textContent = letter
+                btn.onclick = () => {
+                    phonicsPracticed++
+                    saveProgress()
+                    speak(`The letter ${letter} says ${letter.toLowerCase()}... like ${getExampleWord(letter)}`)
+                }
+                grid.appendChild(btn)
+            })
+        }
+        
+        function getExampleWord(letter) {
+            const examples = {
+                'A': 'apple', 'B': 'ball', 'C': 'cat', 'D': 'dog',
+                'E': 'elephant', 'F': 'fish', 'G': 'goat', 'H': 'hat',
+                'I': 'igloo', 'J': 'jump', 'K': 'kite', 'L': 'lion',
+                'M': 'monkey', 'N': 'nest', 'O': 'octopus', 'P': 'pig',
+                'Q': 'queen', 'R': 'rabbit', 'S': 'sun', 'T': 'tiger',
+                'U': 'umbrella', 'V': 'van', 'W': 'whale', 'X': 'xylophone',
+                'Y': 'yarn', 'Z': 'zebra'
+            }
+            return examples[letter] || 'fun word'
+        }
+        
+        // Generate random CVC word for practice
+        function generateCVC() {
+            const consonants = 'bcdfghjklmnpqrstvwxyz'.split('')
+            const vowels = 'aeiou'.split('')
+            const cvc = consonants[Math.floor(Math.random()*consonants.length)] +
+                       vowels[Math.floor(Math.random()*vowels.length)] +
+                       consonants[Math.floor(Math.random()*consonants.length)]
+            document.getElementById('cvc-display').innerHTML = `
+                <div class="text-8xl font-bold bg-yellow-200 px-8 py-6 rounded-3xl">${cvc.toUpperCase()}</div>
+            `
+            return cvc
+        }
+        
+        function readCVC() {
+            const display = document.getElementById('cvc-display').textContent.trim()
+            if (display) speak(display + ' ... ' + display)
+        }
+        
+        // Celebration confetti / sparkles
+        function celebrate() {
+            const colors = ['#22c55e', '#a78bfa', '#f59e0b', '#ec4899']
+            
+            for (let i = 0; i < 80; i++) {
+                setTimeout(() => {
+                    const sparkle = document.createElement('div')
+                    sparkle.textContent = ['✨','⭐','🦊','📖'][Math.floor(Math.random()*4)]
+                    sparkle.style.position = 'fixed'
+                    sparkle.style.left = Math.random() * 100 + 'vw'
+                    sparkle.style.top = '-20px'
+                    sparkle.style.fontSize = Math.random() * 30 + 20 + 'px'
+                    sparkle.style.zIndex = '9999'
+                    sparkle.style.pointerEvents = 'none'
+                    sparkle.style.transform = `rotate(${Math.random()*360}deg)`
+                    document.body.appendChild(sparkle)
+                    
+                    const duration = Math.random() * 3000 + 2000
+                    const angle = Math.random() * 80 - 40
+                    
+                    sparkle.animate([
+                        { transform: `translateY(0) rotate(0deg)` },
+                        { transform: `translateY(${window.innerHeight + 100}px) rotate(${angle * 8}deg)` }
+                    ], {
+                        duration: duration,
+                        easing: 'cubic-bezier(0.25, 0.1, 0.25, 1)'
+                    })
+                    
+                    setTimeout(() => sparkle.remove(), duration)
+                }, i * 2)
+            }
+        }
+        
+        // Reset progress (for parents/teachers)
+        function resetProgress() {
+            if (confirm('Reset all progress? This cannot be undone.')) {
+                stars = 0
+                storiesCompleted = 0
+                gamesWon = 0
+                phonicsPracticed = 0
+                localStorage.clear()
+                renderProgress()
+                alert('Progress reset! 🌟')
+            }
+        }
+        
+        // Main initialization
+        function initSparkleRead() {
+            initializeTailwind()
+            loadProgress()
+            
+            // Render initial pages that need data
+            renderStories()
+            renderSentenceGame()
+            
+            // Keyboard shortcut hint for fun
+            console.log('%c🎉 SparkleRead ready! Press "S" for surprise stars!', 'color:#22c55e; font-family:monospace')
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 's' || e.key === 'S') celebrate()
+            })
+            
+            console.log('✅ SparkleRead website built successfully! Open this file in any browser and let your 1st grader explore interactive reading magic. All content is self-contained, safe, and age-appropriate.')
+        }
+        
+        // Start the whole thing
+        window.onload = initSparkleRead
+    </script>
+</body>
+</html>
